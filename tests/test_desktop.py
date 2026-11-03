@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-APP_DIR = Path(__file__).resolve().parents[1] / "src/teardown/examples/desktop"
-IMAGE = "teardown/desktop-linux"
+APP_DIR = Path(__file__).resolve().parents[1] / "src/crab/examples/desktop"
+IMAGE = "crab/desktop-linux"
 HAVE_IMAGE = subprocess.run(["docker", "image", "inspect", IMAGE], capture_output=True).returncode == 0
 pytestmark = pytest.mark.skipif(not HAVE_IMAGE, reason="build deploy/desktop-linux first")
 
@@ -23,7 +23,7 @@ ACTIONS = {
 
 
 def test_desktop_observe_probe_release_verify(tmp_path):
-    from teardown.project import Project
+    from crab.project import Project
 
     project = Project(tmp_path / "p")
     project.open_target(f"desktop:docker:{IMAGE}", purpose="research", target_options=OPTIONS)

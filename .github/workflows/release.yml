@@ -1,7 +1,7 @@
 name: release
 # Publishes to PyPI when a version tag (v1.2.3) is pushed. It uses PyPI trusted publishing: no token is stored.
-# One-time setup on pypi.org: add a (pending) trusted publisher for project "teardown-cleanroom" with owner
-# "lemonadesaltbagel", repository "teardown", workflow "release.yml" and environment "pypi".
+# One-time setup on pypi.org: add a (pending) trusted publisher for project "crab-cleanroom" with owner
+# "lemonadesaltbagel", repository "crab", workflow "release.yml" and environment "pypi".
 on:
   push:
     tags: ["v*"]
@@ -19,7 +19,7 @@ jobs:
         run: |
           uv venv /tmp/check
           VIRTUAL_ENV=/tmp/check uv pip install dist/*.whl
-          cd /tmp && TEARDOWN_HOME=/tmp/home /tmp/check/bin/teardown demo
+          cd /tmp && CRAB_HOME=/tmp/home /tmp/check/bin/crab demo
       - uses: actions/upload-artifact@v4
         with: {name: dist, path: dist/}
   publish:

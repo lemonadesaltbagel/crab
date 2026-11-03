@@ -12,7 +12,7 @@ uv run pytest -q
 ```
 
 - CLI tests that need Docker skip themselves when Docker is unavailable.
-- Android tests need an emulator with the example apps (`src/teardown/examples/android*/build.sh`).
+- Android tests need an emulator with the example apps (`src/crab/examples/android*/build.sh`).
 - Desktop tests need the desktop image (`deploy/desktop-linux/`).
 - CI runs lint and the tests that need neither.
 
@@ -43,9 +43,9 @@ Use the issue templates. For anything that could let information cross the barri
 
 1. Move the changelog's Unreleased section under the new version, and set `version` in `pyproject.toml`.
 2. Commit, tag `vX.Y.Z` and push the tag. The `release` workflow checks that the tag matches the version, builds
-   the package, installs the wheel on its own and runs `teardown demo`, then publishes to PyPI through trusted
+   the package, installs the wheel on its own and runs `crab demo`, then publishes to PyPI through trusted
    publishing (no token is stored).
 3. Create the GitHub release from the changelog section.
 
-The PyPI side needs a one-time trusted-publisher entry for project `teardown` (owner `lemonadesaltbagel`,
-repository `teardown`, workflow `release.yml`, environment `pypi`).
+The PyPI side needs a one-time trusted-publisher entry for project `crab` (owner `lemonadesaltbagel`,
+repository `crab`, workflow `release.yml`, environment `pypi`).

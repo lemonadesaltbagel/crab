@@ -1,6 +1,6 @@
-# How Teardown is evaluated
+# How CRAB is evaluated
 
-Teardown does not ship a universal benchmark. It ships a **method** you can repeat on your own targets, and the
+CRAB does not ship a universal benchmark. It ships a **method** you can repeat on your own targets, and the
 results below come from applying it while building the tool. Each result is reported with what it measures and
 what it does not.
 
@@ -12,7 +12,7 @@ what it does not.
    original fails, or tests that cannot apply, are excluded and listed. Scores are "clone passes / original
    passes".
 3. **Separate agents for the two sides.**
-   - The observer works only through Teardown's observe tools and the guide.
+   - The observer works only through CRAB's observe tools and the guide.
    - The implementer gets only the released kit and the gate's abstract verdicts.
 4. **Arms that separate the spec's contribution from everything else:**
    - **spec**: kit only;
@@ -40,7 +40,7 @@ what it does not.
 
 What these numbers support:
 
-- **CLI:** on a tool the model cannot know, a Teardown spec alone was enough for a complete reimplementation.
+- **CLI:** on a tool the model cannot know, a CRAB spec alone was enough for a complete reimplementation.
 - **Web, on apps written for the benchmark:** with the current abstraction (`web.aria`, which records every
   difference a user-facing Playwright locator or assertion can see), clones pass 96.9–99.2% of hidden suites. The
   remaining misses are states the observer did not exercise, not structure the spec failed to record.

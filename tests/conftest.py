@@ -6,11 +6,11 @@ from collections import deque
 
 import pytest
 
-from teardown.core.store import Workspace
-from teardown.drivers.fake import open_fake
-from teardown.drivers.session import ObservationSession
-from teardown.engine.mapper import NOT_AVAILABLE, Mapper
-from teardown.examples.signup import ACTIONS, SignupWizard, signup_mapper
+from crab.core.store import Workspace
+from crab.drivers.fake import open_fake
+from crab.drivers.session import ObservationSession
+from crab.engine.mapper import NOT_AVAILABLE, Mapper
+from crab.examples.signup import ACTIONS, SignupWizard, signup_mapper
 
 
 @pytest.fixture

@@ -8,9 +8,9 @@ import pytest
 
 pytest.importorskip("playwright")
 
-from teardown.cli import _local_room  # noqa: E402
-from teardown.drivers.web.driver import EXAMPLES, LocalSite, shutdown_browser  # noqa: E402
-from teardown.project import Project  # noqa: E402
+from crab.cli import _local_room  # noqa: E402
+from crab.drivers.web.driver import EXAMPLES, LocalSite, shutdown_browser  # noqa: E402
+from crab.project import Project  # noqa: E402
 
 
 def test_kit_gate_verifies_web_kit_and_refuses_other_targets(tmp_path):
@@ -30,7 +30,7 @@ def test_kit_gate_verifies_web_kit_and_refuses_other_targets(tmp_path):
         room = _local_room(project, kit=kit)
         verdict = room.verify_against_original("web:kit")
         assert verdict["passed"] >= 1 and verdict["failed"] == 0
-        for target in ("fake:py:teardown.examples.signup_clone:CleanSignup", "cli:local", "web:" + site.url("")):
+        for target in ("fake:py:crab.examples.signup_clone:CleanSignup", "cli:local", "web:" + site.url("")):
             with pytest.raises(PermissionError):
                 room.verify_against_original(target)
     finally:
@@ -43,9 +43,9 @@ def test_gate_service_never_forwards_unexpected_error_text(tmp_path):
     import urllib.error
     import urllib.request
 
-    from teardown.cleanroom import CloneError
-    from teardown.gate.service import serve
-    from teardown.mcp.clean_server import CleanRoom
+    from crab.cleanroom import CloneError
+    from crab.gate.service import serve
+    from crab.mcp.clean_server import CleanRoom
 
     def verify(clone, adapter=None):
         if clone == "boom":
@@ -70,7 +70,7 @@ def test_gate_service_never_forwards_unexpected_error_text(tmp_path):
         assert code == 400 and "';' expected" in message
         import pytest
 
-        from teardown.gate.service import GateError, RemoteCleanRoom
+        from crab.gate.service import GateError, RemoteCleanRoom
 
         client = RemoteCleanRoom(f"http://127.0.0.1:{server.server_address[1]}", "t", timeout_s=10)
         with pytest.raises(GateError, match="400: javac failed"):  # the clean side sees why, not "Bad Request"

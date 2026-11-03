@@ -4,10 +4,10 @@ import json
 
 import pytest
 
-from teardown.audit.log import AuditChainBroken, AuditLog
-from teardown.engine.learner import learn
-from teardown.examples.signup import ACTIONS
-from teardown.gate.gate import (
+from crab.audit.log import AuditChainBroken, AuditLog
+from crab.engine.learner import learn
+from crab.examples.signup import ACTIONS
+from crab.gate.gate import (
     GateConfig,
     GateMode,
     QuoteEntry,
@@ -17,14 +17,14 @@ from teardown.gate.gate import (
     release,
     review,
 )
-from teardown.gate.matcher import CorpusMatcher
-from teardown.spec.draft import ModelRecord, SpecDraft
+from crab.gate.matcher import CorpusMatcher
+from crab.spec.draft import ModelRecord, SpecDraft
 
 LABEL = "I agree to the Terms of Service and Privacy Policy"
 
 
 def _draft(session, statement="Submit stays unavailable until the terms are accepted.") -> SpecDraft:
-    from teardown.core.model import Claim, ClaimIdentity, TraceCheck
+    from crab.core.model import Claim, ClaimIdentity, TraceCheck
 
     result = learn(session, ACTIONS, name="signup", walks_per_state=20, walk_len=10)
     record = ModelRecord(
@@ -79,7 +79,7 @@ def test_quote_ledger_allows_justified_literals(signup_session, workspace):
 
 
 def test_strict_mode_blocks_until_recorded_approvals_cover_every_finding(signup_session, workspace, tmp_path):
-    from teardown.gate.gate import GateApproval
+    from crab.gate.gate import GateApproval
 
     draft = _draft(signup_session, statement="Shows 'Use at least 8 characters, including a number.'")
     config = GateConfig(codename="c", mode=GateMode.STRICT)
@@ -127,7 +127,7 @@ def test_audit_chain_detects_tampering(tmp_path):
 
 
 def test_audit_entries_are_dsse_signed(tmp_path):
-    from teardown.audit.signing import Signer
+    from crab.audit.signing import Signer
 
     signer = Signer(tmp_path / "k.pem")
     log = AuditLog(tmp_path / "audit.jsonl", signer=signer)
@@ -140,7 +140,7 @@ def test_audit_entries_are_dsse_signed(tmp_path):
 
 
 def test_near_verbatim_copy_is_flagged_but_own_words_pass():
-    from teardown.gate.matcher import NearMatcher
+    from crab.gate.matcher import NearMatcher
 
     manual = ("Comments are lines whose first character is a hash sign; they are ignored entirely, and blank lines "
               "consisting only of spaces and tabs are ignored as well.")

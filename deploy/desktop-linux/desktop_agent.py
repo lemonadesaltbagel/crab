@@ -1,4 +1,4 @@
-"""Teardown desktop agent (runs inside the Linux target container).
+"""CRAB desktop agent (runs inside the Linux target container).
 
 Starts Xvfb, a D-Bus session and the AT-SPI registry, then serves line-delimited JSON commands on stdin/stdout:
 

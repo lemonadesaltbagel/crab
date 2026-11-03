@@ -1,7 +1,7 @@
 # Observer guide (CLI targets)
 
 You are the **observer** (dirty side). Your job is to produce a behavioral specification good enough for a separate
-implementer to rebuild the tool **without seeing it**. You may run the tool black-box through Teardown, read its
+implementer to rebuild the tool **without seeing it**. You may run the tool black-box through CRAB, read its
 `--help`, and read public documentation. You must never read its source code, decompile it, or look at any hidden test
 suite.
 
@@ -9,10 +9,10 @@ The implementer gets only what you release: probes with observed outcomes, claim
 unknowns. In the uncontaminated benchmark, an implementer with the author's manual beat one with a probe table alone
 (97% vs 85%): **examples alone are not a spec.** Rules carry the generalizations; probes and checks back them.
 
-## Python API (same operations as the `teardown-observe` MCP server)
+## Python API (same operations as the `crab-observe` MCP server)
 
 ```python
-from teardown.project import Project
+from crab.project import Project
 p = Project("/path/to/project")                      # a codenamed directory, never the product's real name
 p.open_target("cli:docker:<image>", purpose="research", real_names=["<product name>"])
 p.ingest_docs("manual", open("MANUAL.md").read())   # docs join the gate corpus: copied wording gets flagged
@@ -96,7 +96,7 @@ For web, Android and desktop targets, follow [observer-playbook.md](observer-pla
 ## Web targets
 
 ```python
-from teardown.drivers.web.driver import LocalSite          # or any URL you are allowed to observe
+from crab.drivers.web.driver import LocalSite          # or any URL you are allowed to observe
 p.open_target("web:http://127.0.0.1:4200/", purpose="research", real_names=["<product>"],
               target_options={"reset_command": ["<restore backend state>"], "reset_check_url": "<GET that must not change>"})
 p.define_actions({"open_signup": {"op": "click", "role": "link", "name": "Sign up"},
@@ -157,7 +157,7 @@ p.api_contract()                                                       # value-f
     progress/meter values and `title` attributes.
 
   `v9` records every difference a user-facing Playwright locator or assertion can see, and none that only the
-  implementation shows (classes, ids, test ids, wrappers, link targets). `teardown.drivers.web.surface` lists
+  implementation shows (classes, ids, test ids, wrappers, link targets). `crab.drivers.web.surface` lists
   the cases, and a test keeps them that way. Field values are in `properties`: leave it out of `keys` when a
   `same` check compares runs that type different values.
 
@@ -290,7 +290,7 @@ p.probe_web_field("calc", prefix=[...], role="textbox", name="Amount", submit="g
   - `dialogs`: an AlertDialog or other window above the page, by title. The keyboard is left out.
 
   `v2` records every difference a user-facing Espresso or UiAutomator matcher can see in the audit
-  (`teardown.drivers.android.surface`: 21 screen pairs, plus 4 that must stay identical); `v1` records 9 to 12.
+  (`crab.drivers.android.surface`: 21 screen pairs, plus 4 that must stay identical); `v1` records 9 to 12.
   `v3` (the default) also records a control's visible text when it differs from its description
   (`properties.text`: a button showing "Open" described as "Open North") and `keyboard: shown` while the soft
   keyboard is up: it takes the next Back press, so record it before a Back. Android input types ASCII only: a

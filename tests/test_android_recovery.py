@@ -26,9 +26,9 @@ pytestmark = pytest.mark.skipif(not SERIAL, reason="needs a running emulator (it
 
 
 def test_the_driver_restarts_an_emulator_that_crashed():
-    from teardown.drivers.android.driver import AndroidDriver
+    from crab.drivers.android.driver import AndroidDriver
 
-    driver = AndroidDriver(f"android:{SERIAL}:dev.teardown.surface", options={"activity": ".Main"})
+    driver = AndroidDriver(f"android:{SERIAL}:dev.crab.surface", options={"activity": ".Main"})
     try:
         assert driver.reset()["nodes"]  # learns the AVD while the emulator is up
         subprocess.run([ADB, "-s", SERIAL, "emu", "kill"], capture_output=True, timeout=30)

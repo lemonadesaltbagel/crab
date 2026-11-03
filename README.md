@@ -1,32 +1,38 @@
 <div align="center">
 
-# Teardown
+# CRAB
 
-### Clean-room reimplementation by black-box observation.
+### Clean Rebuild of Anything's Behavior
+
+Clean-room reimplementation by black-box observation.
 
 **See a feature you like. Rebuild it from how it behaves, never from its code.**
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-3776ab?style=flat-square&logo=python&logoColor=white)](pyproject.toml)
-[![MCP servers](https://img.shields.io/badge/MCP-observe_%C2%B7_clean-5c4ee5?style=flat-square)](#how-teardown-works)
+[![MCP servers](https://img.shields.io/badge/MCP-observe_%C2%B7_clean-5c4ee5?style=flat-square)](#how-crab-works)
 [![Targets](https://img.shields.io/badge/targets-CLI_%C2%B7_web_%C2%B7_Android-0f766e?style=flat-square)](#what-you-can-analyze)
-[![PyPI](https://img.shields.io/pypi/v/teardown-cleanroom?style=flat-square&color=f59e0b)](https://pypi.org/project/teardown-cleanroom/)
+[![PyPI](https://img.shields.io/pypi/v/crab-cleanroom?style=flat-square&color=f59e0b)](https://pypi.org/project/crab-cleanroom/)
 [![Apache-2.0 license](https://img.shields.io/badge/license-Apache--2.0-d22128?style=flat-square)](LICENSE)
 
-[Quick start](#quick-start) · [How Teardown works](#how-teardown-works) · [What you can analyze](#what-you-can-analyze) · [Results](#results) · [FAQ](#faq) · [Documentation](#documentation)
+[Quick start](#quick-start) · [How CRAB works](#how-crab-works) · [What you can analyze](#what-you-can-analyze) · [Results](#results) · [FAQ](#faq) · [Documentation](#documentation)
 
-<code>uv tool install "teardown-cleanroom[web]" && teardown demo</code>
+<code>uv tool install "crab-cleanroom[web]" && crab demo</code>
 
 </div>
 
+> [!NOTE]
+> CRAB was called **Teardown** until 0.3. The `teardown` command, `TEARDOWN_*` variables and an existing
+> `~/.teardown` keep working for this release; the package is now `crab-cleanroom`.
+
 > [!IMPORTANT]
-> Teardown is early software (0.3). You declare the purpose of every analysis at intake and own its legal
+> CRAB is early software (0.4). You declare the purpose of every analysis at intake and own its legal
 > assessment. Read [Responsible use](#responsible-use) first.
 
 <div align="center">
 
 <br />
 
-<img src="docs/assets/teardown-flow.svg" alt="A confined observer studies the target's behavior through Teardown's drivers; the gate releases a sanitized spec; a confined clean agent rebuilds the feature and gets abstract verdicts back" width="1200" />
+<img src="docs/assets/crab-flow.svg" alt="A confined observer studies the target's behavior through CRAB's drivers; the gate releases a sanitized spec; a confined clean agent rebuilds the feature and gets abstract verdicts back" width="1200" />
 
 <br /><br />
 
@@ -34,19 +40,19 @@
 
 ---
 
-See a feature in an app that you want in your own product? Teardown lets you rebuild it **without ever looking at
+See a feature in an app that you want in your own product? CRAB lets you rebuild it **without ever looking at
 its implementation**. One agent, the *observer*, studies the app as a black box. It records what the app accepts,
-refuses and defaults to, what it does at the edges, and how its screens are sequenced. Teardown turns that into
+refuses and defaults to, what it does at the edges, and how its screens are sequenced. CRAB turns that into
 falsifiable rules and claims and releases them as a sanitized spec. A second agent, the *clean implementer*, sees
 only that spec and writes its own implementation. It can check its work against the original, but it only ever
 gets back abstract pass/fail verdicts.
 
 The valuable knowledge about a feature is behavioral. Tracing the implementation through binaries, minified
-bundles or obfuscated code is slow, brittle, and copies expression you don't want. Teardown never captures code,
+bundles or obfuscated code is slow, brittle, and copies expression you don't want. CRAB never captures code,
 decompilation or stack traces. What it cannot observe becomes an explicit *unknown*, not a silent gap.
 
 Both sides can run **enforced, not just instructed**. The observer works in a container whose only way to the
-target is Teardown's drivers. The implementer works in a container that sees only the spec. Every crossing goes
+target is CRAB's drivers. The implementer works in a container that sees only the spec. Every crossing goes
 through the gate and is recorded in a signed, hash-chained audit log.
 
 ## Quick start
@@ -54,29 +60,29 @@ through the gate and is recorded in a signed, hash-chained audit log.
 ### Install
 
 ```bash
-uv tool install "teardown-cleanroom[web]"   # Python 3.12+; the command is `teardown`
-teardown install-browser                   # Chromium for web targets
-teardown demo                              # observe -> gate -> clean -> verdict on a built-in example
+uv tool install "crab-cleanroom[web]"   # Python 3.12+; the command is `crab`
+crab install-browser                   # Chromium for web targets
+crab demo                              # observe -> gate -> clean -> verdict on a built-in example
 ```
 
-`pip install "teardown-cleanroom[web]"` works too, and
-`uv tool install "teardown-cleanroom[web] @ git+https://github.com/lemonadesaltbagel/teardown"` installs the
+`pip install "crab-cleanroom[web]"` works too, and
+`uv tool install "crab-cleanroom[web] @ git+https://github.com/lemonadesaltbagel/crab"` installs the
 latest unreleased version. Docker is needed for CLI targets (each run is isolated in a container)
 and for the enforced rooms; an installed copy builds the room images from files it carries. Android needs the SDK
 and an emulator or device reachable through `adb`.
 
-To work on Teardown itself, use a checkout: `git clone https://github.com/lemonadesaltbagel/teardown.git`, then
-`uv sync` and `uv run teardown ...`.
+To work on CRAB itself, use a checkout: `git clone https://github.com/lemonadesaltbagel/crab.git`, then
+`uv sync` and `uv run crab ...`.
 
 ### Set up your agent
 
 Register the observe server with your agent (Claude Code shown; any MCP client works):
 
 ```bash
-claude mcp add teardown-observe -- teardown observe --project /path/to/project
+claude mcp add crab-observe -- crab observe --project /path/to/project
 ```
 
-From a checkout, use `uv run --directory /path/to/teardown teardown observe ...` instead.
+From a checkout, use `uv run --directory /path/to/crab crab observe ...` instead.
 
 Then ask:
 
@@ -92,10 +98,10 @@ prompt; the observer guide ([docs/observer-guide.md](docs/observer-guide.md)) de
 ### Review and release
 
 ```bash
-teardown review  --project P --feature F           # gate findings by class, coverage gaps
-teardown approve --project P --feature F --by you@example.com --class expected-output --reason test-oracle
-teardown release --project P --feature F
-teardown export-clean --project P --out KIT        # the kit: released spec + build/verify scaffolding
+crab review  --project P --feature F           # gate findings by class, coverage gaps
+crab approve --project P --feature F --by you@example.com --class expected-output --reason test-oracle
+crab release --project P --feature F
+crab export-clean --project P --out KIT        # the kit: released spec + build/verify scaffolding
 ```
 
 In strict mode every release needs your approval at a terminal, and the observer's tools cannot approve
@@ -106,16 +112,16 @@ reproduce, approve the action names, acknowledge the coverage gaps the observer 
 ### Rebuild in the clean room
 
 ```bash
-teardown cleanroom up    --project P --kit KIT --claude-token-file ~/.config/teardown-claude-token
-teardown cleanroom check --project P               # isolation probes, run from inside the container
-teardown cleanroom shell --project P -- claude     # the implementer sees only /kit; `verify` asks the gate
-teardown cleanroom down  --project P
+crab cleanroom up    --project P --kit KIT --claude-token-file ~/.config/crab-claude-token
+crab cleanroom check --project P               # isolation probes, run from inside the container
+crab cleanroom shell --project P -- claude     # the implementer sees only /kit; `verify` asks the gate
+crab cleanroom down  --project P
 ```
 
-`teardown observerroom` confines the observer the same way
+`crab observerroom` confines the observer the same way
 ([docs/clean-runtime.md](docs/clean-runtime.md)).
 
-## How Teardown works
+## How CRAB works
 
 1. **Observe.** Drivers run the target and capture behavior only: outputs and file effects for CLIs,
    accessibility trees and API exchanges for web apps, accessibility trees for Android. A *mapper* turns each
@@ -123,7 +129,7 @@ teardown cleanroom down  --project P
    and records everything a user-facing Playwright test can tell apart.
 2. **Generalize.** UI discovery crawls every screen. The observer probes fields by equivalence class and
    boundary, injects faults (server errors, network failures, malformed bodies, unreadable files, airplane
-   mode) and states rules in its own words. Teardown checks every rule against the original and records it as
+   mode) and states rules in its own words. CRAB checks every rule against the original and records it as
    corroborated or falsified. Coverage lists what is left: each control, field, endpoint × fault, data state
    and live output, every route signed in and signed out, and record pages in each status. A release is
    refused until every item is exercised or explained.
@@ -136,7 +142,7 @@ teardown cleanroom down  --project P
 
 ## What you can analyze
 
-| Target | What Teardown observes | Faults it can inject | Requirements | Status |
+| Target | What CRAB observes | Faults it can inject | Requirements | Status |
 |---|---|---|---|---|
 | Command-line tools | Exit code, stdout, diagnostic presence and errno class, file effects | Closed/full stdio, unreadable files, read-only directories | Docker (isolated runner) or local | **Stable** |
 | Web apps | Everything a user-facing Playwright locator or assertion can tell apart (the accessibility tree with roles, names, levels, states and nesting; field values and properties; titles, focus, status messages, landmarks text), plus API method/path/status and public-contract selectors | 5xx, network failure, timeout, malformed body, pending requests, changed responses (server modes); API setup calls to reach deep screens | Playwright Chromium; optional backend reset command | **Working**: 96.9–99.2% of hidden tests on the last three held-out apps (see Results) |
@@ -144,7 +150,7 @@ teardown cleanroom down  --project P
 | Linux desktop apps | AT-SPI tree: windows, controls, text, list items | — | Docker (Xvfb + AT-SPI container) | Experimental |
 | macOS, Windows, iOS | — | — | — | Not started |
 
-Teardown refuses to bypass protections and never captures implementation-tier data (see
+CRAB refuses to bypass protections and never captures implementation-tier data (see
 [Responsible use](#responsible-use)).
 
 ## Results
@@ -172,20 +178,20 @@ the same harness. How the evaluation works, and every result with its caveat, is
 ## FAQ
 
 <details>
-<summary><strong>Which agents can use Teardown?</strong></summary>
+<summary><strong>Which agents can use CRAB?</strong></summary>
 
-Any agent that supports MCP. The observe server runs over stdio or HTTP (`teardown observe --port`). The
-enforced rooms ship a container with Claude Code and register only the room's Teardown server. Any other agent
+Any agent that supports MCP. The observe server runs over stdio or HTTP (`crab observe --port`). The
+enforced rooms ship a container with Claude Code and register only the room's CRAB server. Any other agent
 that can run in the container and use a proxy works too.
 
 </details>
 
 <details>
-<summary><strong>Does Teardown read the target's code?</strong></summary>
+<summary><strong>Does CRAB read the target's code?</strong></summary>
 
 No. Drivers capture behavior-tier data only. Stack traces are redacted at capture, Android resource ids and
 activity names never enter observations, and web API bodies are reduced to value-free shapes. In the observer
-room, the observer agent cannot reach the target's files, bundles or the internet at all: only Teardown's tools.
+room, the observer agent cannot reach the target's files, bundles or the internet at all: only CRAB's tools.
 
 </details>
 
@@ -203,15 +209,15 @@ from inside the container.
 <summary><strong>What about the model's own memory?</strong></summary>
 
 No container can close that gap. If the implementer's model already knows the target, part of the result is
-memory. Teardown asks implementers whether they recognized the target and reports it. The uncontaminated
+memory. CRAB asks implementers whether they recognized the target and reports it. The uncontaminated
 benchmarks use apps written for the purpose.
 
 </details>
 
 <details>
-<summary><strong>Does Teardown upload my app?</strong></summary>
+<summary><strong>Does CRAB upload my app?</strong></summary>
 
-Teardown runs locally. Your agents send their tool results to their model provider, which has its own data
+CRAB runs locally. Your agents send their tool results to their model provider, which has its own data
 policy.
 
 </details>
@@ -219,7 +225,7 @@ policy.
 <details>
 <summary><strong>Is reimplementing a product this way legal?</strong></summary>
 
-That depends on your jurisdiction, the target's terms and what you build. Teardown records your declared
+That depends on your jurisdiction, the target's terms and what you build. CRAB records your declared
 purpose and shows applicable warnings, but it does not give legal advice. A clean room addresses copying of
 expression. It does not address patents, trademarks or trade dress.
 
@@ -235,7 +241,7 @@ expression. It does not address patents, trademarks or trade dress.
 
 ## Responsible use
 
-Teardown never:
+CRAB never:
 
 - bypasses CAPTCHAs, bot protection, certificate pinning, root or attestation checks, or FLAG_SECURE;
 - flips Electron fuses or re-signs binaries;
@@ -261,6 +267,6 @@ uv run pytest -q    # Android and desktop tests run when an emulator / the deskt
 
 [Apache License 2.0](LICENSE). See [NOTICE](NOTICE).
 
-The license covers Teardown's own code and documents. Teardown grants no rights in the software you analyze:
+The license covers CRAB's own code and documents. CRAB grants no rights in the software you analyze:
 observing a target, and building and distributing anything from what you observed, remain subject to that
 target's terms and the law that applies to you.

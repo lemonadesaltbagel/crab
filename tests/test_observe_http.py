@@ -10,7 +10,7 @@ import time
 import urllib.error
 import urllib.request
 
-from teardown.project import Project
+from crab.project import Project
 
 
 def _free_port() -> int:
@@ -38,7 +38,7 @@ def test_observe_over_http_requires_the_token_and_serves_the_tools(tmp_path, mon
     project = tmp_path / "p"
     Project(project).open_target("fake:signup-a", purpose="research")
     port = _free_port()
-    proc = subprocess.Popen([sys.executable, "-m", "teardown.cli", "observe", "--project", str(project),
+    proc = subprocess.Popen([sys.executable, "-m", "crab.cli", "observe", "--project", str(project),
                              "--port", str(port), "--token", "s3cret"], stdout=subprocess.DEVNULL,
                             stderr=subprocess.DEVNULL)
     url = f"http://127.0.0.1:{port}/mcp"
@@ -77,16 +77,16 @@ def test_long_calls_report_progress_so_clients_do_not_time_out(tmp_path, monkeyp
     from mcp.client.session import ClientSession
     from mcp.client.streamable_http import create_mcp_http_client, streamable_http_client
 
-    from teardown.drivers.web.driver import EXAMPLES, LocalSite
+    from crab.drivers.web.driver import EXAMPLES, LocalSite
 
     monkeypatch.setenv("NO_PROXY", "127.0.0.1,localhost")
     site = LocalSite(EXAMPLES)
     project = tmp_path / "p"
     Project(project).open_target("web:" + site.url("signup_a.html"), purpose="research")
     port = _free_port()
-    proc = subprocess.Popen([sys.executable, "-m", "teardown.cli", "observe", "--project", str(project),
+    proc = subprocess.Popen([sys.executable, "-m", "crab.cli", "observe", "--project", str(project),
                              "--port", str(port), "--token", "t"], stdout=subprocess.DEVNULL,
-                            stderr=subprocess.DEVNULL, env={**os.environ, "TEARDOWN_HEARTBEAT_S": "0.2"})
+                            stderr=subprocess.DEVNULL, env={**os.environ, "CRAB_HEARTBEAT_S": "0.2"})
     url = f"http://127.0.0.1:{port}/mcp"
     progress: list[float] = []
 

@@ -6,10 +6,10 @@ import pytest
 
 pytest.importorskip("playwright")
 
-from teardown.drivers.base import Action  # noqa: E402
-from teardown.drivers.web.driver import EXAMPLES, LocalSite, WebDriver  # noqa: E402
-from teardown.engine.abstractions import web_aria  # noqa: E402
-from teardown.project import Project  # noqa: E402
+from crab.drivers.base import Action  # noqa: E402
+from crab.drivers.web.driver import EXAMPLES, LocalSite, WebDriver  # noqa: E402
+from crab.engine.abstractions import web_aria  # noqa: E402
+from crab.project import Project  # noqa: E402
 
 ACTIONS = {
     "email_ok": {"op": "fill", "role": "textbox", "name": "Email", "value": "jane.doe@example.com"},
@@ -23,7 +23,7 @@ ACTIONS = {
 
 @pytest.fixture(scope="module")
 def site():
-    from teardown.drivers.web.driver import shutdown_browser
+    from crab.drivers.web.driver import shutdown_browser
 
     s = LocalSite(EXAMPLES)
     yield s
@@ -208,7 +208,7 @@ def test_contract_rules_release_and_catch_a_clone_that_drops_the_empty_wrapper(t
 
 
 def test_profile_overrides_reach_the_driver():
-    from teardown.project import open_driver
+    from crab.project import open_driver
 
     d = open_driver("web:http://127.0.0.1:9/", None, {"profile": {"asset_hosts": ["cdn.example"]}})
     assert d.profile.asset_hosts == ["cdn.example"] and d.profile.block_external
@@ -256,7 +256,7 @@ def test_blocked_hosts_are_reported(tmp_path):
 
 
 def test_api_contract_folds_declared_templates_and_query_values():
-    from teardown.project import _contract_path
+    from crab.project import _contract_path
 
     templates = ["/api/articles/feed", "/api/articles/{slug}", "/api/articles/{slug}/comments"]
     assert _contract_path("/api/articles/my-post-1a2b3c4d", templates) == "/api/articles/{slug}"
@@ -266,7 +266,7 @@ def test_api_contract_folds_declared_templates_and_query_values():
 
 
 def test_fault_path_globs_respect_segments():
-    from teardown.drivers.web.driver import path_glob
+    from crab.drivers.web.driver import path_glob
 
     article = path_glob("/api/articles/*")
     assert article("/api/articles/my-post") and not article("/api/articles/my-post/comments")
@@ -355,7 +355,7 @@ def test_discover_ui_crawls_screens_defines_actions_and_drives_coverage(site, tm
 
 
 def test_web_aria_v2_reads_quoted_names_and_table_cells():
-    from teardown.engine.abstractions import BUILTINS
+    from crab.engine.abstractions import BUILTINS
 
     snap = "\n".join([
         "- main:",
@@ -387,7 +387,7 @@ def test_coverage_resolves_its_own_unknowns_once_covered(site, tmp_path):
 
 
 def test_web_aria_v2_observes_title_focus_status_dialogs_options_and_current(tmp_path):
-    from teardown.engine.abstractions import BUILTINS
+    from crab.engine.abstractions import BUILTINS
 
     root = tmp_path / "site"
     root.mkdir()
@@ -458,7 +458,7 @@ def test_history_ops_unclickable_elements_and_undefined_rule_actions(site, tmp_p
 
 
 def test_web_aria_v3_keeps_table_structure_and_description_lists():
-    from teardown.engine.abstractions import BUILTINS
+    from crab.engine.abstractions import BUILTINS
 
     snap = "\n".join([
         '- table "Pieces":', "  - rowgroup:", '    - row "Title Units":', '      - columnheader "Title"',
@@ -474,9 +474,9 @@ def test_web_aria_v3_keeps_table_structure_and_description_lists():
 def test_same_named_controls_null_expectations_purpose_errors_and_data_folding(tmp_path):
     import json as _json
 
-    from teardown.engine.discovery import summarize
-    from teardown.engine.mapper import symbol_matches
-    from teardown.project import _contract_path
+    from crab.engine.discovery import summarize
+    from crab.engine.mapper import symbol_matches
+    from crab.project import _contract_path
 
     root = tmp_path / "site"
     root.mkdir()
@@ -514,7 +514,7 @@ def test_same_named_controls_null_expectations_purpose_errors_and_data_folding(t
 
 
 def test_web_aria_v4_landmark_text_tells_inline_from_block_splits(tmp_path):
-    from teardown.engine.abstractions import BUILTINS
+    from crab.engine.abstractions import BUILTINS
 
     root = tmp_path / "site"
     root.mkdir()
@@ -542,7 +542,7 @@ def test_web_aria_v4_landmark_text_tells_inline_from_block_splits(tmp_path):
 
 
 def test_release_requires_coverage_gaps_to_be_exercised_explained_or_accepted(site, tmp_path):
-    from teardown.project import CoverageGateBlocked
+    from crab.project import CoverageGateBlocked
 
     project = Project(tmp_path / "p")
     project.open_target("web:" + site.url("fetcher.html"), purpose="research")
@@ -594,7 +594,7 @@ def test_field_probe_reads_refusals_shown_only_as_status_messages(tmp_path):
 
 
 def test_web_aria_v5_tells_css_generated_icons_from_literal_ones(tmp_path):
-    from teardown.engine.abstractions import BUILTINS
+    from crab.engine.abstractions import BUILTINS
 
     root = tmp_path / "site"
     root.mkdir()
@@ -663,7 +663,7 @@ def test_coverage_lists_data_states_and_session_expiry_until_observed(tmp_path):
 def test_nested_expectations_need_their_keys_and_faults_can_be_cleared(site):
     import json as _json
 
-    from teardown.engine.mapper import symbol_matches
+    from crab.engine.mapper import symbol_matches
 
     observed = _json.dumps({"controls": {"button:Save": []}})
     assert symbol_matches(observed, _json.dumps({"controls": {"button:Save": []}}), "subset")
@@ -684,7 +684,7 @@ def test_nested_expectations_need_their_keys_and_faults_can_be_cleared(site):
 
 
 def test_web_aria_v6_records_dialog_roles_and_accessible_descriptions(tmp_path):
-    from teardown.engine.abstractions import BUILTINS
+    from crab.engine.abstractions import BUILTINS
 
     root = tmp_path / "site"
     root.mkdir()
@@ -717,7 +717,7 @@ def test_web_aria_v6_records_dialog_roles_and_accessible_descriptions(tmp_path):
 
 
 def test_web_aria_v7_records_aria_invalid_row_headers_and_named_groups(tmp_path):
-    from teardown.engine.abstractions import BUILTINS
+    from crab.engine.abstractions import BUILTINS
 
     root = tmp_path / "site"
     root.mkdir()
@@ -758,7 +758,7 @@ def test_web_aria_v7_records_aria_invalid_row_headers_and_named_groups(tmp_path)
 
 
 def test_web_aria_v8_records_the_user_facing_playwright_surface(tmp_path):
-    from teardown.drivers.web.surface import CASES, SAME, audit
+    from crab.drivers.web.surface import CASES, SAME, audit
 
     result = audit(["web.aria/v7", "web.aria/v8", "web.aria/v9", "web.aria/v10"], root=tmp_path / "surface")
     for v in ("web.aria/v9", "web.aria/v10"):
@@ -894,7 +894,7 @@ def test_coverage_combines_routes_with_session_and_record_status(tmp_path):
 
 
 def test_the_original_runs_actions_under_their_released_codenamed_names(site, tmp_path):
-    from teardown.gate.gate import rename_text
+    from crab.gate.gate import rename_text
 
     project = Project(tmp_path / "p")
     project.open_target("web:" + site.url("fetcher.html"), purpose="research", real_names=["Quotes"])
@@ -909,7 +909,7 @@ def test_the_original_runs_actions_under_their_released_codenamed_names(site, tm
 
 
 def test_a_dead_browser_is_replaced_instead_of_failing_every_later_call(site):
-    from teardown.drivers.web import driver as web
+    from crab.drivers.web import driver as web
 
     first = WebDriver("web:" + site.url("fetcher.html"))
     first.reset()
@@ -923,8 +923,8 @@ def test_a_dead_browser_is_replaced_instead_of_failing_every_later_call(site):
 
 
 def test_v10_masks_clock_and_relative_times_and_records_hash_routes():
-    from teardown.engine.abstractions import BUILTINS
-    from teardown.engine.discovery import route_template
+    from crab.engine.abstractions import BUILTINS
+    from crab.engine.discovery import route_template
 
     def at(clock, ago):
         return {"aria": f'- switch "UTC Timezone ({clock})"\n- paragraph: Updated {ago}', "path": "/",
@@ -969,7 +969,7 @@ def test_a_control_that_mounts_just_after_the_step_is_still_found(tmp_path):
         try:
             d.reset()
             d.page.get_by_role("button", name="New Variant").click()  # the panel mounts 300 ms later
-            from teardown.drivers.web.driver import WebAction
+            from crab.drivers.web.driver import WebAction
 
             assert d._perform(WebAction(op="click", role="button", name="Create")) == "ok"
             assert d._perform(WebAction(op="click", role="button", name="Missing")) == "absent"
@@ -1056,7 +1056,7 @@ def test_a_fault_met_while_the_page_loaded_counts_for_coverage(tmp_path):
 
 
 def test_v10_masks_the_observers_own_patterns():
-    from teardown.engine.abstractions import BUILTINS
+    from crab.engine.abstractions import BUILTINS
 
     def page(token, created):
         aria = f'- paragraph: Your token is {token}\n- table "Flags":\n  - row:\n    - cell "a"\n    - cell "{created}"'
@@ -1070,7 +1070,7 @@ def test_v10_masks_the_observers_own_patterns():
 
 
 def test_v10_masks_numeric_dates_and_older_versions_keep_them():
-    from teardown.engine.abstractions import BUILTINS
+    from crab.engine.abstractions import BUILTINS
 
     def page(created):
         return {"aria": f'- table "Tokens":\n  - row:\n    - cell "ci"\n    - cell "{created}"', "path": "/"}
@@ -1114,7 +1114,7 @@ def test_boolean_fields_of_singleton_responses_are_modes_to_cover_with_a_patch(t
 
 
 def test_v10_masks_dates_in_control_names_and_properties():
-    from teardown.engine.abstractions import BUILTINS
+    from crab.engine.abstractions import BUILTINS
 
     def at(stamp, ago):
         return {"aria": f'- switch "UTC Timezone Display dates in UTC {stamp}"\n- button "Save"', "path": "/",
@@ -1205,7 +1205,7 @@ def test_a_request_action_seeds_the_backend_for_original_and_clone(tmp_path):
             "seed": {"op": "request", "request": {"method": "POST", "path": "/api/items", "body": {"name": "Kestrel"}}},
             "bad_seed": {"op": "request", "request": {"method": "POST", "path": "/api/items", "body": {}}},
             "reload": {"op": "reload"}})
-        from teardown.core.model import Evidence
+        from crab.core.model import Evidence
 
         session = project.session()
         session.reset()
@@ -1222,14 +1222,14 @@ def test_a_request_action_seeds_the_backend_for_original_and_clone(tmp_path):
         assert verifying.driver.api_base == api + "/"  # a clone's setup steps go where the original's went
         verifying.close()
 
-        from teardown.drivers.web.driver import WebAction, WebDriver
+        from crab.drivers.web.driver import WebAction, WebDriver
 
         clone = WebDriver(f"web:http://127.0.0.1:{servers[1].server_port}/", api_base=api + "/",
                           actions={"seed": WebAction.model_validate(project.action_table()["seed"])})
         try:
             clone.reset()
             items.clear()
-            from teardown.drivers.base import Action
+            from crab.drivers.base import Action
 
             clone.step(Action(name="seed"))
             assert items == ["Kestrel"]  # the clone's setup went to the shared backend, not its own origin
@@ -1259,7 +1259,7 @@ def test_a_request_whose_finish_was_never_seen_does_not_hold_later_observations(
     assert d._in_flight() == 1 and list(d._pending) == [waiting]
 
 def test_actions_for_masked_names_match_the_real_names(tmp_path):
-    from teardown.engine.discovery import click_action
+    from crab.engine.discovery import click_action
 
     name, action = click_action("web", "link", "Admins • Created <ago> • Updated <ago>")
     assert name == "click[link:Admins • Created <ago> • Updated <ago>]" and action["name_regex"] is True
@@ -1283,7 +1283,7 @@ def test_actions_for_masked_names_match_the_real_names(tmp_path):
 def test_name_patterns_drop_python_inline_flags_and_refuse_python_only_syntax():
     from pydantic import ValidationError
 
-    from teardown.drivers.web.driver import WebAction
+    from crab.drivers.web.driver import WebAction
 
     assert WebAction.model_validate({"op": "click", "role": "option", "name": "(?i)^color",
                                      "name_regex": True}).name == "^color"  # it crashed in the browser before

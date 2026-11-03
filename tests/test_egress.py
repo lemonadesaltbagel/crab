@@ -4,8 +4,8 @@ import json
 
 import pytest
 
-from teardown.drivers.web.driver import EXAMPLES, LocalSite
-from teardown.gate.egress import EgressPolicy, serve
+from crab.drivers.web.driver import EXAMPLES, LocalSite
+from crab.gate.egress import EgressPolicy, serve
 
 
 @pytest.fixture()

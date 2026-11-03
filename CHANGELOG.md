@@ -1,6 +1,24 @@
 # Changelog
 
+CRAB was called Teardown before 0.4; entries below 0.4.0 use the old name.
+
 ## Unreleased
+
+## 0.4.0 (2026-11-02)
+
+**Teardown is now CRAB: Clean Rebuild of Anything's Behavior.** Nothing about what it does changes.
+
+- The package is `crab-cleanroom` on PyPI, the command is `crab`, and the import package is `crab`.
+- Renamed with it: the `CRAB_*` environment variables (`CRAB_HOME`, `CRAB_CACHE`, ...), the state directory
+  `~/.crab`, the MCP servers `crab-observe` and `crab-clean`, the room and clone images (`crab-observerroom-*`,
+  `crab-cleanroom-*`, `crab-clone/...`), the Android agent (`dev.crab.agent`), and the repository
+  (github.com/lemonadesaltbagel/crab; the old address redirects).
+- Kept for this release, so nothing breaks on upgrade: the `teardown` command (it prints a note), `TEARDOWN_*`
+  variables when no `CRAB_*` one is set, an existing `~/.teardown` or `~/.cache/teardown` until a CRAB one exists,
+  and `import teardown...`, including target specs saved with `teardown.` module paths.
+- Upgrading: `uv tool uninstall teardown-cleanroom && uv tool install "crab-cleanroom[web]"`. Room images are
+  rebuilt under the new names on first use; the old `teardown-*` images can be removed afterwards. On Android the
+  new agent installs next to the old one (`dev.teardown.agent`), which can be uninstalled.
 
 ## 0.3.0 (2026-10-28)
 

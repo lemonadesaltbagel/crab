@@ -1,6 +1,6 @@
 # Security policy
 
-Teardown's purpose is a barrier between what the observer sees and what the clean implementer receives. Anything
+CRAB's purpose is a barrier between what the observer sees and what the clean implementer receives. Anything
 that weakens that barrier is a security issue.
 
 ## In scope
@@ -13,17 +13,17 @@ that weakens that barrier is a security issue.
   - releasing in strict mode without recorded approvals;
   - approving through the observer's tools;
   - relaxing strict mode.
-- **Audit-log tampering** that `teardown audit-verify` does not detect.
+- **Audit-log tampering** that `crab audit-verify` does not detect.
 - **Capturing implementation-tier data**, or bypassing a hard refusal.
 
 ## Reporting
 
 Report privately through GitHub's
-[private vulnerability reporting](https://github.com/lemonadesaltbagel/teardown/security/advisories/new). Do
+[private vulnerability reporting](https://github.com/lemonadesaltbagel/crab/security/advisories/new). Do
 not open a public issue.
 
 Include:
-- the version (`teardown --version`);
+- the version (`crab --version`);
 - the target type;
 - the steps to reproduce;
 - what crossed the barrier and where it appeared.

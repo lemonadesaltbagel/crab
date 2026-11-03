@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import pytest
 
-from teardown.audit.log import AuditLog
-from teardown.core.model import Evidence
-from teardown.drivers.policy import PROHIBITED_CATEGORIES, HardRefusal
-from teardown.engine.claims import ClaimLedger
-from teardown.engine.learner import learn
-from teardown.examples.signup import ACTIONS
-from teardown.spec.efsm import EFSM
-from teardown.spec.export import to_ears, to_xstate
+from crab.audit.log import AuditLog
+from crab.core.model import Evidence
+from crab.drivers.policy import PROHIBITED_CATEGORIES, HardRefusal
+from crab.engine.claims import ClaimLedger
+from crab.engine.learner import learn
+from crab.examples.signup import ACTIONS
+from crab.spec.efsm import EFSM
+from crab.spec.export import to_ears, to_xstate
 
 
 def test_session_records_evidence_traces_and_unavailable_actions(signup_session, workspace):
@@ -69,7 +69,7 @@ def test_claims_are_corroborated_or_falsified_by_fresh_probes(signup_session, wo
 
 
 def test_field_outcomes_mask_the_typed_value_and_its_slug_but_not_short_values():
-    from teardown.engine.fieldprobe import outcome
+    from crab.engine.fieldprobe import outcome
 
     a = outcome({"path": "/article/hello-world", "headings": ["Hello World"],
                  "network": ["GET /api/articles/hello-world 200"]}, "Hello World")
@@ -82,7 +82,7 @@ def test_field_outcomes_mask_the_typed_value_and_its_slug_but_not_short_values()
 def test_subset_expectations_are_subsets_at_every_level():
     import json
 
-    from teardown.engine.mapper import symbol_matches
+    from crab.engine.mapper import symbol_matches
 
     observed = json.dumps({"controls": {"button:Go": ["disabled"], "textbox:Name": ["empty"]}, "text": ["Hi"]})
     assert symbol_matches(observed, json.dumps({"controls": {"button:Go": ["disabled"]}}), "subset")
@@ -96,7 +96,7 @@ def test_subset_expectations_are_subsets_at_every_level():
 
 
 def test_server_side_refusals_are_told_apart_from_acceptance():
-    from teardown.engine.fieldprobe import judge, outcome
+    from crab.engine.fieldprobe import judge, outcome
 
     good = outcome({"path": "/specimens/SF-1", "status": ["Quarantined."],
                     "network": ["POST /api/specimens/{id}/quarantine 200"]})
@@ -115,7 +115,7 @@ def test_server_side_refusals_are_told_apart_from_acceptance():
 def test_length_bounds_find_a_minimum_before_the_maximum():
     import json
 
-    from teardown.engine.fieldprobe import length_bounds, outcome
+    from crab.engine.fieldprobe import length_bounds, outcome
 
     def field(lo: int, hi: int):
         return lambda value: json.dumps({"text": ["ok" if lo <= len(value) <= hi else "no"]})
@@ -132,8 +132,8 @@ def test_a_probe_rows_outcome_matches_the_symbol_it_was_taken_from():
     adds must be a real symbol key (a derived one made 16 rows of the eighth held-out round unverifiable)."""
     import json
 
-    from teardown.engine.fieldprobe import outcome_json
-    from teardown.engine.mapper import symbol_matches
+    from crab.engine.fieldprobe import outcome_json
+    from crab.engine.mapper import symbol_matches
 
     symbol = json.dumps({"path": "/recitals/new", "headings": ["New recital"], "alerts": [],
                          "network": ["POST /api/recitals 422"], "dialogs": ["dialog:Return recital"],
@@ -144,7 +144,7 @@ def test_a_probe_rows_outcome_matches_the_symbol_it_was_taken_from():
 
 def test_discovery_explores_one_record_per_status():
     """A retired record's page can lack the forms an active one has: discovery keeps one row per status."""
-    from teardown.engine.discovery import summarize
+    from crab.engine.discovery import summarize
 
     symbol = {"path": "/birds", "controls": {"link:Ash": [], "link:Birch": [], "link:Cedar": [], "button:Add": []},
               "tables": {"Birds": {"columns": ["Name", "Status"],

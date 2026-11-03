@@ -24,7 +24,7 @@ pytestmark = pytest.mark.skipif(not SERIAL, reason="needs an emulator or device 
 
 
 def test_android_a11y_v3_records_the_user_facing_espresso_surface():
-    from teardown.drivers.android.surface import CASES, SAME, audit
+    from crab.drivers.android.surface import CASES, SAME, audit
 
     result = audit(["android.a11y/v1", "android.a11y/v2", "android.a11y/v3"], serial=SERIAL)
     assert [c.id for c in CASES if not result[c.id]["android.a11y/v3"]] == []  # every user-facing difference

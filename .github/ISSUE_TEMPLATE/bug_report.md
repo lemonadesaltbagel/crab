@@ -4,7 +4,7 @@ about: Something does not work as documented
 labels: bug
 ---
 
-**Teardown version** (`teardown --version`):
+**CRAB version** (`crab --version`):
 
 **Target type** (CLI / web / Android / desktop) and how it is run:
 

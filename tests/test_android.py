@@ -31,7 +31,7 @@ def _installed(serial: str, package: str) -> bool:
 SERIAL = _device()
 pytestmark = pytest.mark.skipif(
     not SERIAL or not _installed(SERIAL, "com.example.tipper") or not _installed(SERIAL, "com.example.tipper.b"),
-    reason="needs an emulator with the example apps (src/teardown/examples/android*/build.sh + adb install)")
+    reason="needs an emulator with the example apps (src/crab/examples/android*/build.sh + adb install)")
 
 ACTIONS = {
     "bill_80": {"action": "fill", "role": "textbox", "name": "Bill amount", "value": "80"},
@@ -44,7 +44,7 @@ ACTIONS = {
 
 
 def test_android_observe_probe_rule_release_verify(tmp_path):
-    from teardown.project import Project
+    from crab.project import Project
 
     project = Project(tmp_path / "p")
     project.open_target(f"android:{SERIAL}:com.example.tipper", purpose="research")
@@ -76,10 +76,10 @@ def test_android_observe_probe_rule_release_verify(tmp_path):
 def test_android_kit_clone_is_built_installed_and_verified_and_network_fault_resets(tmp_path):
     import re
 
-    from teardown.cleanroom import clone_package, export_kit, verify_kit
-    from teardown.drivers.android.driver import AndroidAction, AndroidDriver
-    from teardown.drivers.base import Action
-    from teardown.project import Project
+    from crab.cleanroom import clone_package, export_kit, verify_kit
+    from crab.drivers.android.driver import AndroidAction, AndroidDriver
+    from crab.drivers.base import Action
+    from crab.project import Project
 
     project = Project(tmp_path / "p")
     project.open_target(f"android:{SERIAL}:com.example.tipper", purpose="research", real_names=["Tipper"])
@@ -92,7 +92,7 @@ def test_android_kit_clone_is_built_installed_and_verified_and_network_fault_res
     kit = tmp_path / "kit"
     export_kit(tmp_path / "p", kit)
     package = clone_package(rel.codename)
-    source = (Path(__file__).parents[1] / "src/teardown/examples/android/src/com/example/tipper/Main.java").read_text()
+    source = (Path(__file__).parents[1] / "src/crab/examples/android/src/com/example/tipper/Main.java").read_text()
     target = kit / "src" / package.replace(".", "/") / "Main.java"
     target.write_text(re.sub(r"^package [\w.]+;", f"package {package};", source, flags=re.M))
     verdict = verify_kit(project, kit, "android:kit")
@@ -114,7 +114,7 @@ def test_android_kit_clone_is_built_installed_and_verified_and_network_fault_res
 
 
 def test_field_probe_with_observer_defined_acceptance(tmp_path):
-    from teardown.project import Project
+    from crab.project import Project
 
     project = Project(tmp_path / "p")
     project.open_target(f"android:{SERIAL}:com.example.tipper", purpose="research")

@@ -11,7 +11,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
 
-from teardown.api_proxy import serve
+from crab.api_proxy import serve
 
 
 class Backend(BaseHTTPRequestHandler):

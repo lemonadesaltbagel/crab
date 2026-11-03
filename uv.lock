@@ -153,6 +153,48 @@ wheels = [
 ]
 
 [[package]]
+name = "crab-cleanroom"
+version = "0.4.0"
+source = { editable = "." }
+dependencies = [
+    { name = "aalpy" },
+    { name = "cryptography" },
+    { name = "mcp" },
+    { name = "pydantic" },
+]
+
+[package.optional-dependencies]
+web = [
+    { name = "playwright" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "aalpy" },
+    { name = "playwright" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aalpy", specifier = ">=1.6.2" },
+    { name = "cryptography", specifier = ">=44" },
+    { name = "mcp", specifier = ">=2.3" },
+    { name = "playwright", marker = "extra == 'web'", specifier = ">=1.64" },
+    { name = "pydantic", specifier = ">=2.14" },
+]
+provides-extras = ["learn", "web"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "aalpy", specifier = ">=1.6.2" },
+    { name = "playwright", specifier = ">=1.64" },
+    { name = "pytest", specifier = ">=9" },
+    { name = "ruff", specifier = ">=0.17" },
+]
+
+[[package]]
 name = "cryptography"
 version = "50.0.2"
 source = { registry = "https://pypi.org/simple" }
@@ -863,48 +905,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ad/eb/4e197bf26b023abafc5e9043ec8710d7de0fcb032d0969045236d72aa0b1/starlette-1.9.0.tar.gz", hash = "sha256:3d931de246ed870e35ce605974440816ef895e592f255d1396cfdf191d4c4318", size = 2732466, upload-time = "2026-10-18T15:50:33.189Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f3/93/181df62699d9b5aca1d87e5cfda131dac87e3cdaebf668662f7206ca3470/starlette-1.9.0-py3-none-any.whl", hash = "sha256:fd3f159936e882d06c1108f84688f7cda2cf85fc6a592a50edbd175e882c2ddc", size = 80335, upload-time = "2026-10-18T15:50:31.526Z" },
-]
-
-[[package]]
-name = "teardown-cleanroom"
-version = "0.3.0"
-source = { editable = "." }
-dependencies = [
-    { name = "aalpy" },
-    { name = "cryptography" },
-    { name = "mcp" },
-    { name = "pydantic" },
-]
-
-[package.optional-dependencies]
-web = [
-    { name = "playwright" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "aalpy" },
-    { name = "playwright" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "aalpy", specifier = ">=1.6.2" },
-    { name = "cryptography", specifier = ">=44" },
-    { name = "mcp", specifier = ">=2.3" },
-    { name = "playwright", marker = "extra == 'web'", specifier = ">=1.64" },
-    { name = "pydantic", specifier = ">=2.14" },
-]
-provides-extras = ["learn", "web"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "aalpy", specifier = ">=1.6.2" },
-    { name = "playwright", specifier = ">=1.64" },
-    { name = "pytest", specifier = ">=9" },
-    { name = "ruff", specifier = ">=0.17" },
 ]
 
 [[package]]

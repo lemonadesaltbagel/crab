@@ -1,7 +1,7 @@
 """The strict gate end to end on a web target, as one developer runs it.
 
 The observer works only through the observe MCP server over HTTP, as the confined observer does. It cannot
-approve or release on its own. The person at the gate reviews and approves with `teardown approve` in a real
+approve or release on its own. The person at the gate reviews and approves with `crab approve` in a real
 pseudo-terminal, typing the codename shown in the prompt. Then the release goes out, the kit is exported and
 the audit log records who approved what.
 """
@@ -22,8 +22,8 @@ import pytest
 
 pytest.importorskip("playwright")
 
-from teardown.drivers.web.driver import EXAMPLES, LocalSite  # noqa: E402
-from teardown.project import Project  # noqa: E402
+from crab.drivers.web.driver import EXAMPLES, LocalSite  # noqa: E402
+from crab.project import Project  # noqa: E402
 
 MANUAL = ("Press the load button to fetch the latest quotes from the server and show them in a list.\n\n"
           "If the server fails, the page tells you so and leaves the list empty until you try again.")
@@ -36,7 +36,7 @@ def _free_port() -> int:
 
 
 def _cli(*argv: str) -> subprocess.CompletedProcess:
-    return subprocess.run([sys.executable, "-m", "teardown.cli", *argv], capture_output=True, text=True,
+    return subprocess.run([sys.executable, "-m", "crab.cli", *argv], capture_output=True, text=True,
                           stdin=subprocess.DEVNULL, timeout=300)
 
 
@@ -44,7 +44,7 @@ def _at_terminal(*argv: str, typed: str | None = None) -> tuple[int, str]:
     """Run a CLI command in a pseudo-terminal and answer its codename prompt as a person would: read the
     codename from the prompt and type it (or ``typed`` instead)."""
     master, slave = os.openpty()
-    proc = subprocess.Popen([sys.executable, "-m", "teardown.cli", *argv], stdin=slave, stdout=slave,
+    proc = subprocess.Popen([sys.executable, "-m", "crab.cli", *argv], stdin=slave, stdout=slave,
                             stderr=slave, close_fds=True)
     os.close(slave)
     out = b""
@@ -103,7 +103,7 @@ def test_strict_web_loop_one_developer(tmp_path, monkeypatch):
     project_dir = tmp_path / "p"
     Project(project_dir)  # the person creates the project; the observer opens the target through MCP
     port = _free_port()
-    server = subprocess.Popen([sys.executable, "-m", "teardown.cli", "observe", "--project", str(project_dir),
+    server = subprocess.Popen([sys.executable, "-m", "crab.cli", "observe", "--project", str(project_dir),
                                "--port", str(port), "--token", "obs-token"], stdout=subprocess.DEVNULL,
                               stderr=subprocess.DEVNULL)
     observer = Observer(f"http://127.0.0.1:{port}/mcp", "obs-token")

@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="430" viewBox="0 0 1200 430" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
-  <title>Teardown: a confined observer studies the target's behavior, the gate releases a sanitized spec, and a confined clean agent rebuilds the feature and gets abstract verdicts back.</title>
+  <title>CRAB: a confined observer studies the target's behavior, the gate releases a sanitized spec, and a confined clean agent rebuilds the feature and gets abstract verdicts back.</title>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
       <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>

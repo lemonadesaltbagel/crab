@@ -8,10 +8,10 @@ import json
 import pytest
 from mcp import Client
 
-from teardown.demo import run_demo
-from teardown.mcp.clean_server import CleanRoom, build_clean_server
-from teardown.mcp.observe_server import build_observe_server
-from teardown.project import Project
+from crab.demo import run_demo
+from crab.mcp.clean_server import CleanRoom, build_clean_server
+from crab.mcp.observe_server import build_observe_server
+from crab.project import Project
 
 
 @pytest.fixture(scope="module")
@@ -83,7 +83,7 @@ def test_mcp_servers_expose_the_expected_tools(demo):
 
 
 def test_gate_service_serves_spec_verdicts_and_tickets_over_http(demo):
-    from teardown.gate.service import RemoteCleanRoom, serve
+    from crab.gate.service import RemoteCleanRoom, serve
 
     project: Project = demo["project"]
 
@@ -95,12 +95,12 @@ def test_gate_service_serves_spec_verdicts_and_tickets_over_http(demo):
     try:
         remote = RemoteCleanRoom(url, "s3cret")
         assert remote.get_spec()["release"] == demo["release"].id
-        verdict = remote.verify_against_original("fake:py:teardown.examples.signup_clone:CleanSignup")
+        verdict = remote.verify_against_original("fake:py:crab.examples.signup_clone:CleanSignup")
         assert verdict["failed"] == 0 and verdict["passed"] > 0
         ticket = remote.ask_question("Does Back keep the email?")
         assert remote.get_ticket(ticket["ticket"])["status"] == "open"
 
-        from teardown.gate.service import GateError
+        from crab.gate.service import GateError
 
         with pytest.raises(GateError) as err:
             RemoteCleanRoom(url, "wrong").get_spec()
@@ -129,7 +129,7 @@ def test_verify_caches_the_original_and_can_rerun_only_what_failed(tmp_path):
         return session
 
     verifier.open_original = counting
-    bad = "fake:py:teardown.examples.signup_clone:BuggySignup"
+    bad = "fake:py:crab.examples.signup_clone:BuggySignup"
     first = verifier.verify(bad)  # the demo already filled the cache for this release: only the sample re-runs
     assert runs["n"] < first.passed + first.failed + first.inconclusive
     again = verifier.verify(bad, only="failed")
@@ -164,7 +164,7 @@ def test_a_gate_failure_does_not_spend_a_verify_call_and_calls_take_turns(tmp_pa
 
     verifier.open_original = broken
     with pytest.raises(RuntimeError):
-        verifier.verify("fake:py:teardown.examples.signup_clone:BuggySignup")
+        verifier.verify("fake:py:crab.examples.signup_clone:BuggySignup")
     assert _json.loads(budget.read_text()) == before
 
     running, most = [0], [0]

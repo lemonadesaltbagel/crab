@@ -6,12 +6,12 @@ import subprocess
 
 import pytest
 
-from teardown.drivers.cli.discover import parse_help
-from teardown.drivers.cli.invocation import Invocation
-from teardown.drivers.cli.plan import ProbeHints, accepted_classes, pairwise, plan_pairwise, plan_sweep
-from teardown.drivers.cli.runner import ContainerRunner, LocalRunner
-from teardown.engine.abstractions import cli_behavior, errno_class
-from teardown.project import Project
+from crab.drivers.cli.discover import parse_help
+from crab.drivers.cli.invocation import Invocation
+from crab.drivers.cli.plan import ProbeHints, accepted_classes, pairwise, plan_pairwise, plan_sweep
+from crab.drivers.cli.runner import ContainerRunner, LocalRunner
+from crab.engine.abstractions import cli_behavior, errno_class
+from crab.project import Project
 
 
 def _docker_ok() -> bool:
@@ -259,7 +259,7 @@ def test_rules_are_checked_released_and_verified_as_relations(tmp_path):
 
 
 def test_input_mutations_and_coverage(tmp_path):
-    from teardown.drivers.cli.plan import mutations
+    from crab.drivers.cli.plan import mutations
 
     muts = mutations("a\nb\nc\n", {"hash": "# x"})
     assert muts["crlf"] == "a\r\nb\r\nc\r\n" and muts["hash@middle"] == "a\n# x\nb\nc\n"
@@ -288,7 +288,7 @@ def test_input_mutations_and_coverage(tmp_path):
 
 
 def test_stack_traces_are_redacted_at_capture():
-    from teardown.drivers.cli.runner import redact_traces
+    from crab.drivers.cli.runner import redact_traces
 
     py = (
         b'tool: bad input\nTraceback (most recent call last):\n  File "/opt/tool/main.py", line 12, in <module>\n'
@@ -341,7 +341,7 @@ def test_help_output_can_be_approved_as_a_functional_quote(tmp_path):
 
 
 def test_strict_mode_blocks_release_until_coverage_is_measured_or_gaps_acknowledged(tmp_path):
-    from teardown.project import CoverageGateBlocked
+    from crab.project import CoverageGateBlocked
 
     project = Project(tmp_path / "p")
     project.open_target("cli:local", purpose="substitute", strict=True)
@@ -369,7 +369,7 @@ def test_strict_mode_blocks_release_until_coverage_is_measured_or_gaps_acknowled
     assert "made-up feature" in blocked.value.gaps
     with pytest.raises(ValueError):  # strict: a name passed to release is not an approval
         project.release_spec(draft.id, approved_by="reviewer")
-    project.approve_coverage_gaps("sort", "reviewer")  # a human acknowledges the gaps (`teardown approve`)
+    project.approve_coverage_gaps("sort", "reviewer")  # a human acknowledges the gaps (`crab approve`)
     _, report = project.review_spec(draft.id)
     for cls in {f.cls for f in report.findings} - {"prose"}:
         project.approve_findings(draft.id, "reviewer", "test-oracle", cls=cls)

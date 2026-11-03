@@ -10,7 +10,7 @@ javac --release 11 -cp "$JAR" -d "$OUT/classes" $(find src -name '*.java') 2>/de
 "$BT/d8" --lib "$JAR" --min-api 26 --output "$OUT/dex" $(find "$OUT/classes" -name '*.class')
 cp "$OUT/unsigned.apk" "$OUT/app.apk" && (cd "$OUT/dex" && zip -q -j ../app.apk classes.dex)
 [ -f debug.keystore ] || keytool -genkeypair -keystore debug.keystore -storepass android -keypass android \
-  -alias debug -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Teardown Agent" >/dev/null 2>&1
+  -alias debug -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=CRAB Agent" >/dev/null 2>&1
 "$BT/zipalign" -f 4 "$OUT/app.apk" "$OUT/aligned.apk"
 "$BT/apksigner" sign --ks debug.keystore --ks-pass pass:android --out "$OUT/agent.apk" "$OUT/aligned.apk"
 echo "$OUT/agent.apk"

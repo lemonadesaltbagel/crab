@@ -7,13 +7,13 @@ it cannot approve one.
 ## The loop
 
 ```bash
-teardown review  --project P --feature F            # findings by class, approvals, coverage gaps
-teardown approve --project P --feature F --by you@example.com --class interface       --reason accessibility-name
-teardown approve --project P --feature F --by you@example.com --class expected-output --reason test-oracle
-teardown approve --project P --feature F --by you@example.com --finding fnd_... --reason user-required
-teardown approve --project P --feature F --by you@example.com --coverage --note "why these gaps are acceptable"
-teardown release --project P --feature F
-teardown audit-verify --project P
+crab review  --project P --feature F            # findings by class, approvals, coverage gaps
+crab approve --project P --feature F --by you@example.com --class interface       --reason accessibility-name
+crab approve --project P --feature F --by you@example.com --class expected-output --reason test-oracle
+crab approve --project P --feature F --by you@example.com --finding fnd_... --reason user-required
+crab approve --project P --feature F --by you@example.com --coverage --note "why these gaps are acceptable"
+crab release --project P --feature F
+crab audit-verify --project P
 ```
 
 Each `approve` shows what it covers and asks you to type the project's codename. It refuses to run without an
@@ -28,7 +28,7 @@ probe rows:
   prose finding reached the person.
 - The person made three decisions: the expected-output class (180 findings) as `test-oracle`, the interface
   class (11 action names) as `accessibility-name`, and the three coverage gaps with a note. Then one
-  `teardown release`.
+  `crab release`.
 - Approvals are content-addressed. Running the same `approve` again records nothing new and says who already
   approved.
 
@@ -56,7 +56,7 @@ expression leaks without functional need, so a class approval never covers it.
 ## What the gate does and does not protect against
 
 - **It stops** an agent from approving its own leaks through the tools it is given. The observe MCP server has no
-  approval tool in strict mode. `release_spec` accepts no approver. `teardown approve` needs a terminal and a typed
+  approval tool in strict mode. `release_spec` accepts no approver. `crab approve` needs a terminal and a typed
   confirmation.
 - **It records** every decision, with who made it and why, in a hash chain that `audit-verify` checks.
 - **It is not a sandbox.** An agent with unrestricted shell access to the dirty project, running as you, could

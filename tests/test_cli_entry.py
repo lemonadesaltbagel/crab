@@ -1,10 +1,10 @@
-"""Every `teardown` subcommand dispatches (guards against parser/dispatch drift)."""
+"""Every `crab` subcommand dispatches (guards against parser/dispatch drift)."""
 
 from __future__ import annotations
 
 import pytest
 
-from teardown.cli import main
+from crab.cli import main
 
 
 @pytest.mark.parametrize("command", ["observe", "clean", "gate-serve", "remote-verify", "demo", "verify", "verify-web",
@@ -20,7 +20,7 @@ def test_every_subcommand_has_help(command, capsys):
 def test_dispatch_covers_every_parser():
     import inspect
 
-    import teardown.cli as cli
+    import crab.cli as cli
 
     source = inspect.getsource(cli.main)
     for command in ["observe", "clean", "gate-serve", "remote-verify", "demo", "verify", "verify-web", "export-clean",
@@ -32,9 +32,9 @@ def test_dispatch_covers_every_parser():
 def test_review_reports_classes_and_approve_refuses_without_a_terminal(tmp_path, capsys):
     import json
 
-    from teardown.demo import ALPHABET
-    from teardown.examples.signup import signup_mapper
-    from teardown.project import Project
+    from crab.demo import ALPHABET
+    from crab.examples.signup import signup_mapper
+    from crab.project import Project
 
     project = Project(tmp_path / "p")
     project.open_target("fake:signup-a", purpose="substitute", strict=True, real_names=["Acme"])
@@ -51,7 +51,7 @@ def test_review_reports_classes_and_approve_refuses_without_a_terminal(tmp_path,
 
 def test_no_subcommand_argument_shadows_the_command_name():
     """A subparser argument with dest 'command' silently overwrites the dispatch key (happened twice)."""
-    import teardown.cli as cli
+    import crab.cli as cli
 
     parser_actions = []
     original = cli.argparse.ArgumentParser.parse_args
@@ -100,19 +100,19 @@ def test_the_wheel_carries_the_room_files_and_no_local_secrets(tmp_path):
     root = Path(__file__).resolve().parents[1]
     subprocess.run(["uv", "build", "--wheel", "-q", "--out-dir", str(tmp_path)], cwd=root, check=True)
     names = zipfile.ZipFile(next(tmp_path.glob("*.whl"))).namelist()
-    for needed in ("teardown/_room/deploy/cleanroom.yaml", "teardown/_room/deploy/observerroom.yaml",
-                   "teardown/_room/deploy/Dockerfile.clean", "teardown/_room/deploy/clean/room-claude",
-                   "teardown/_room/pyproject.toml", "teardown/observer-playbook.md",
-                   "teardown/_room/deploy/android-agent/build.sh",
-                   "teardown/_room/deploy/android-agent/src/dev/teardown/agent/Agent.java"):
+    for needed in ("crab/_room/deploy/cleanroom.yaml", "crab/_room/deploy/observerroom.yaml",
+                   "crab/_room/deploy/Dockerfile.clean", "crab/_room/deploy/clean/room-claude",
+                   "crab/_room/pyproject.toml", "crab/observer-playbook.md",
+                   "crab/_room/deploy/android-agent/build.sh",
+                   "crab/_room/deploy/android-agent/src/dev/crab/agent/Agent.java"):
         assert needed in names, needed
-    assert not [n for n in names if n.endswith((".keystore", ".apk", ".pem")) or "/.teardown/" in n]
+    assert not [n for n in names if n.endswith((".keystore", ".apk", ".pem")) or "/.crab/" in n]
 
 
 def test_an_installed_copy_assembles_the_room_build_context(tmp_path, monkeypatch):
-    from teardown import resources
+    from crab import resources
 
-    package = tmp_path / "site" / "teardown"
+    package = tmp_path / "site" / "crab"
     (package / "_room" / "deploy").mkdir(parents=True)
     (package / "_room" / "pyproject.toml").write_text("[project]\n")
     (package / "_room" / "deploy" / "cleanroom.yaml").write_text("name: x\n")
@@ -120,10 +120,10 @@ def test_an_installed_copy_assembles_the_room_build_context(tmp_path, monkeypatc
     (package / "cli.py").write_text("")
     monkeypatch.setattr(resources, "PACKAGE", package)
     monkeypatch.setattr(resources, "in_checkout", lambda: False)
-    monkeypatch.setenv("TEARDOWN_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("CRAB_HOME", str(tmp_path / "home"))
     root = resources.room_root()
     assert root.is_relative_to(tmp_path / "home") and (root / "deploy" / "cleanroom.yaml").exists()
-    assert (root / "src" / "teardown" / "cli.py").exists() and (root / "docs" / "observer-playbook.md").exists()
-    assert not (root / "src" / "teardown" / "_room").exists()
-    assert not (root / "src" / "teardown" / "observer-playbook.md").exists()  # once, under docs/
+    assert (root / "src" / "crab" / "cli.py").exists() and (root / "docs" / "observer-playbook.md").exists()
+    assert not (root / "src" / "crab" / "_room").exists()
+    assert not (root / "src" / "crab" / "observer-playbook.md").exists()  # once, under docs/
     assert resources.room_root() == root  # assembled once per version
