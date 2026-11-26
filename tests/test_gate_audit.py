@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import multiprocessing
+import threading
 
 import pytest
 
@@ -137,6 +139,44 @@ def test_audit_entries_are_dsse_signed(tmp_path):
     other = Signer(tmp_path / "other.pem")
     with pytest.raises(AuditChainBroken):
         log.verify({other.keyid: other.public_pem})  # signature by an unknown key
+
+
+def _append_many(path: str, count: int, barrier) -> None:
+    log = AuditLog(path)
+    barrier.wait(timeout=60)
+    for i in range(count):
+        log.append("claim-probed", {}, {"i": i})
+
+
+def test_audit_appends_from_threads_extend_one_chain(tmp_path):
+    log = AuditLog(tmp_path / "audit.jsonl")
+    barrier = threading.Barrier(4)
+
+    def worker() -> None:
+        barrier.wait(timeout=60)
+        for i in range(20):
+            log.append("claim-probed", {}, {"i": i})
+
+    threads = [threading.Thread(target=worker) for _ in range(4)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=60)
+    assert not any(thread.is_alive() for thread in threads)
+    assert log.verify() == 4 * 20
+
+
+def test_audit_appends_from_processes_extend_one_chain(tmp_path):
+    ctx = multiprocessing.get_context("spawn")
+    path = tmp_path / "audit.jsonl"
+    barrier = ctx.Barrier(4)
+    processes = [ctx.Process(target=_append_many, args=(str(path), 20, barrier)) for _ in range(4)]
+    for process in processes:
+        process.start()
+    for process in processes:
+        process.join(timeout=120)
+    assert [process.exitcode for process in processes] == [0, 0, 0, 0]
+    assert AuditLog(path).verify() == 4 * 20
 
 
 def test_near_verbatim_copy_is_flagged_but_own_words_pass():
