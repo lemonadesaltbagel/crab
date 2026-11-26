@@ -8,8 +8,16 @@ anchoring (RFC 3161 / Rekor) come in Phase 3; the chain format does not change.
 from __future__ import annotations
 
 import json
+import threading
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
+
+try:
+    import fcntl
+except ImportError:  # pragma: no cover - Windows has no flock; appends are still serialized per process
+    fcntl = None  # type: ignore[assignment]
 
 from crab.core.ids import canonical_json, sha256_hex
 
@@ -33,30 +41,47 @@ class AuditLog:
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.signer = signer
+        # The chain tail and the line that extends it must be one step. The thread lock covers threads; the
+        # sidecar flock covers the gate, the observer and CLI commands, which may run as separate processes on
+        # the same project (see docs/clean-runtime.md).
+        self._lock_path = self.path.with_name(f"{self.path.name}.lock")
+        self._thread_lock = threading.Lock()
+
+    @contextmanager
+    def _append_lock(self) -> Iterator[None]:
+        with self._thread_lock, self._lock_path.open("a") as lock_file:
+            if fcntl is not None:
+                fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+            try:
+                yield
+            finally:
+                if fcntl is not None:
+                    fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
 
     def append(self, predicate: str, subjects: dict[str, str | list[str]], body: dict[str, Any]) -> dict[str, Any]:
         """``subjects`` maps a name to its sha256 hex digest (ids are converted by stripping their prefix), or to a
         list of them (recorded as ``name[0]``, ``name[1]``, ...)."""
-        seq, prev = self._tail()
-        flat: list[tuple[str, str]] = []
-        for name, digest in sorted(subjects.items()):
-            if isinstance(digest, list | tuple):
-                flat.extend((f"{name}[{i}]", d) for i, d in enumerate(digest))
-            else:
-                flat.append((name, digest))
-        statement = {
-            "_type": STATEMENT_TYPE,
-            "subject": [{"name": n, "digest": {"sha256": _hex(d)}} for n, d in flat],
-            "predicateType": predicate_type(predicate),
-            "predicate": body,
-        }
-        entry: dict[str, Any] = {"seq": seq, "prev": prev, "statement": statement}
-        if self.signer is not None:
-            entry["dsse"] = self.signer.envelope(canonical_json(statement))
-        entry["digest"] = sha256_hex(canonical_json(entry))
-        with self.path.open("a", encoding="utf-8") as fh:
-            fh.write(json.dumps(entry, ensure_ascii=False, sort_keys=True) + "\n")
-        return entry
+        with self._append_lock():
+            seq, prev = self._tail()
+            flat: list[tuple[str, str]] = []
+            for name, digest in sorted(subjects.items()):
+                if isinstance(digest, list | tuple):
+                    flat.extend((f"{name}[{i}]", d) for i, d in enumerate(digest))
+                else:
+                    flat.append((name, digest))
+            statement = {
+                "_type": STATEMENT_TYPE,
+                "subject": [{"name": n, "digest": {"sha256": _hex(d)}} for n, d in flat],
+                "predicateType": predicate_type(predicate),
+                "predicate": body,
+            }
+            entry: dict[str, Any] = {"seq": seq, "prev": prev, "statement": statement}
+            if self.signer is not None:
+                entry["dsse"] = self.signer.envelope(canonical_json(statement))
+            entry["digest"] = sha256_hex(canonical_json(entry))
+            with self.path.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps(entry, ensure_ascii=False, sort_keys=True) + "\n")
+            return entry
 
     def entries(self) -> list[dict[str, Any]]:
         if not self.path.exists():
